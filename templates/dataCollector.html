@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>Data Collection</title>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <style>
+        body{
+            height: 100vh;
+            width: 100vw;
+            background-color: black;
+            color: white;
+        }
+        #form-section{
+            padding-left: 25px;
+            padding-top: 50px;
+        }
+        h1{
+            font-family: sans-serif;
+            font-size: 28px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+    </style>  
+</head>
+  <body>
+    <h1>Enter User Information</h1>
+    <div id="form-section">
+    <form id="userForm" method="POST" action="/submit_data">
+        <label for="name">Name:</label><br>
+        <input type="text" id="name" name="name" required><br><br>
+
+        <label for="email">Email:</label><br>
+        <input type="email" id="email" name="email" required><br><br>
+
+        <label for="age">Age:</label><br>
+        <input type="number" id="age" name="age" required><br><br>
+
+        <label for="city">City:</label><br>
+        <input type="text" id="city" name="city" required><br><br>
+        <input type="submit" value="Submit">
+    </form>
+    </div>
+    <script>
+        document.getElementById('userForm').addEventListener('submit', handleSubmission);
+
+        function handleSubmission(e){
+            e.preventDefault();  // Prevent the form from submitting normally
+            
+            // Create FormData object from the form
+            const formData = new FormData(e.target);
+
+            // Send the form data using fetch
+            fetch('/submit_data', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())  // Parse JSON response from server
+            .then(data => {
+                if (data.message) {
+                    console.log('Submission Successful', data.message)  // Show success alert
+                    // Clear the form fields
+                    document.getElementById('name').value = '';
+                    document.getElementById('email').value = '';
+                    document.getElementById('age').value = '';
+                    document.getElementById('city').value = '';
+                    window.location.href = '/success';  
+                    // Redirect to the success page
+                   
+                } else if (data.error) {
+                    alert(data.error);  // Show error alert if something went wrong
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred!');
+            });
+        }
+    </script>
+  </body>
+</html>
